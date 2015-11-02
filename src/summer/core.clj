@@ -2,7 +2,7 @@
   (:require [tentacles.core :as core]
             [tentacles.repos :as repos]
             [tentacles.pulls :as pulls]
-            [clj-format :as format])
+            [clj-time.format :as format])
    (:gen-class))
 
 (defn -main
@@ -28,5 +28,7 @@
       (repos/specific-commit user repo sha {:auth auth}))))
 
 (def github-formatter
-  "converts github dates into Joda datetimes"
   (format/formatters :date-time-no-ms))
+
+(defn parse-github-date [datestring]
+  (format/parse github-formatter datestring))
