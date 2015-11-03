@@ -6,14 +6,21 @@
    (:gen-class))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
   (println "Hello, World!"))
+
+(defn- commit
+  [user repo sha auth]
+  (repos/specific-commit user repo sha {:auth auth}))
 
 (defn pull-request-metadata
   "get pull request number and date"
   [user repo state auth]
   (map #(select-keys % [:number :created_at]) (pulls/pulls user repo {:auth auth :state state})))
+
+(defn- pull-requests
+  [user repo state auth]
+  (pulls/pulls user repo {:auth auth :state state}))
 
 (defn pull-commits
   "returns seq of shas"
@@ -21,11 +28,9 @@
   (map #(:sha %) (pulls/commits user repo number {:auth auth})))
 
 (defn commit-changes
+  [commit-map]
   "returns number of changes for a commit"
-  [user repo sha auth]
-  (:total
-    (:stats
-      (repos/specific-commit user repo sha {:auth auth}))))
+  (:total (:stats commit-map)))
 
 (def github-formatter
   (format/formatters :date-time-no-ms))
