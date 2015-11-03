@@ -9,23 +9,29 @@
   [& args]
   (println "Hello, World!"))
 
+;; data accessors; wrappers around tentacles
+
 (defn- commit
   [user repo sha auth]
   (repos/specific-commit user repo sha {:auth auth}))
-
-(defn pull-request-metadata
-  "get pull request number and date"
-  [user repo state auth]
-  (map #(select-keys % [:number :created_at]) (pulls/pulls user repo {:auth auth :state state})))
 
 (defn- pull-requests
   [user repo state auth]
   (pulls/pulls user repo {:auth auth :state state}))
 
+(defn- commits
+  [user repo number auth]
+  (pulls/commits user repo number {:auth auth}))
+
+(defn pull-request-metadata
+  "get pull request number and date"
+  [pr-seq]
+  (map #(select-keys % [:number :created_at]) pr-seq))
+
 (defn pull-commits
   "returns seq of shas"
-  [user repo number auth]
-  (map #(:sha %) (pulls/commits user repo number {:auth auth})))
+  [commit-seq]
+  (map #(:sha %) commit-seq))
 
 (defn commit-changes
   [commit-map]
