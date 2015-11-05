@@ -1,6 +1,9 @@
 (ns summer.core-test
   (:require [clojure.test :refer :all]
-            [summer.core :refer [parse-github-date commit-changes pull-request-metadata]]
+            [summer.core :refer [parse-github-date
+                                 commit-changes
+                                 pull-request-metadata
+                                 pull-commits]]
             [clj-time.core :as t]))
 
 (deftest test-formatter
@@ -111,3 +114,107 @@
   (testing "given a seq of PRs, grab date and the number"
     (is (= (pull-request-metadata fake-prs) '({:created_at "2015-11-02T15:11:32Z", :number 1020}
                                               {:created_at "2015-10-29T21:23:03Z", :number 1018})))))
+
+
+(def fake-commit-seq
+ [
+  {
+    :sha "87bbebf01a403a31408223d85dda6077a0492d8b",
+    :commit {:author {:name "Alice Smith and Bob Smith",
+                      :email "fake-user@fake-user.com",
+                      :date "2015-11-02T18:59:17Z"},
+             :committer {:name "Alice Smith and Bob Smith",
+                         :email "fake-user@fake-user.com",
+                         :date "2015-11-02T18:59:17Z"},
+             :message "added placement image model and table data",
+             :tree {:sha "d78154197703722550fa1c2e25f56c775adc4ea2",
+                    :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/d78154197703722550fa1c2e25f56c775adc4ea2"},
+             :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/87bbebf01a403a31408223d85dda6077a0492d8b",
+             :comment_count 0},
+    :url "https://api.github.com/repos/fake-user/fake-repo/commits/87bbebf01a403a31408223d85dda6077a0492d8b",
+    :html_url "https://github.com/fake-user/fake-repo/commit/87bbebf01a403a31408223d85dda6077a0492d8b",
+    :comments_url "https://api.github.com/repos/fake-user/fake-repo/commits/87bbebf01a403a31408223d85dda6077a0492d8b/comments",
+    :author nil,
+    :committer nil,
+    :parents [{:sha "a6045177b5e7bac103e347913a35bf5d29da2173",
+               :url "https://api.github.com/repos/fake-user/fake-repo/commits/a6045177b5e7bac103e347913a35bf5d29da2173",
+               :html_url "https://github.com/fake-user/fake-repo/commit/a6045177b5e7bac103e347913a35bf5d29da2173"}]
+    }
+    {
+    :sha "0d453af295fdf0769c11576a5545fe5f44ec8079",
+    :commit {:author {:name "Alice Smith and Bob Smith",
+                      :email "fake-user@fake-user.com",
+                      :date "2015-11-02T22:18:57Z"},
+             :committer {:name "Alice Smith and Bob Smith",
+                         :email "fake-user@fake-user.com",
+                         :date "2015-11-02T22:18:57Z"},
+             :message "add has one relationship to placement and placement_image",
+             :tree {:sha "90a060a366edffe116488da3d121700dd6fe722f",
+                    :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/90a060a366edffe116488da3d121700dd6fe722f"},
+             :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/0d453af295fdf0769c11576a5545fe5f44ec8079",
+             :comment_count 0},
+    :url "https://api.github.com/repos/fake-user/fake-repo/commits/0d453af295fdf0769c11576a5545fe5f44ec8079",
+    :html_url "https://github.com/fake-user/fake-repo/commit/0d453af295fdf0769c11576a5545fe5f44ec8079",
+    :comments_url "https://api.github.com/repos/fake-user/fake-repo/commits/0d453af295fdf0769c11576a5545fe5f44ec8079/comments",
+    :author nil,
+    :committer nil,
+    :parents [{:sha "87bbebf01a403a31408223d85dda6077a0492d8b",
+               :url "https://api.github.com/repos/fake-user/fake-repo/commits/87bbebf01a403a31408223d85dda6077a0492d8b",
+               :html_url "https://github.com/fake-user/fake-repo/commit/87bbebf01a403a31408223d85dda6077a0492d8b"}]
+    }
+    {
+    :sha "fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+    :commit {:author {:name "Alice Smith and Bob Smith",
+                      :email "fake-user@fake-user.com",
+                      :date "2015-11-03T00:01:19Z"},
+             :committer {:name "Alice Smith and Bob Smith",
+                         :email "fake-user@fake-user.com",
+                         :date "2015-11-03T00:01:19Z"},
+             :message "added image uploading support for initial placement setup",
+             :tree {:sha "e6df24477414404df90027e68790f339b700b9d2",
+                    :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/e6df24477414404df90027e68790f339b700b9d2"},
+             :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+             :comment_count 0},
+    :url "https://api.github.com/repos/fake-user/fake-repo/commits/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+    :html_url "https://github.com/fake-user/fake-repo/commit/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+    :comments_url "https://api.github.com/repos/fake-user/fake-repo/commits/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688/comments",
+    :author nil,
+    :committer nil,
+    :parents [{:sha "0d453af295fdf0769c11576a5545fe5f44ec8079",
+               :url "https://api.github.com/repos/fake-user/fake-repo/commits/0d453af295fdf0769c11576a5545fe5f44ec8079",
+               :html_url "https://github.com/fake-user/fake-repo/commit/0d453af295fdf0769c11576a5545fe5f44ec8079"}]
+    }
+    {
+    :sha "91fe7446aabeabc9c0baf96b4c7493f62147dae8",
+    :commit {:author {:name "Alice Smith and Bob Smith",
+                      :email "fake-user@fake-user.com",
+                      :date "2015-11-03T00:01:58Z"},
+             :committer {:name "Alice Smith and Bob Smith",
+                         :email "fake-user@fake-user.com",
+                         :date "2015-11-03T00:01:58Z"},
+             :message "temp:commit for showing placement image on pplacement setup page",
+             :tree {:sha "c659536e37803a6c94f1ad79e03b0f8992f25be5",
+                    :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/c659536e37803a6c94f1ad79e03b0f8992f25be5"},
+             :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/91fe7446aabeabc9c0baf96b4c7493f62147dae8",
+             :comment_count 0},
+    :url "https://api.github.com/repos/fake-user/fake-repo/commits/91fe7446aabeabc9c0baf96b4c7493f62147dae8",
+    :html_url "https://github.com/fake-user/fake-repo/commit/91fe7446aabeabc9c0baf96b4c7493f62147dae8",
+    :comments_url "https://api.github.com/repos/fake-user/fake-repo/commits/91fe7446aabeabc9c0baf96b4c7493f62147dae8/comments",
+    :author nil,
+    :committer nil,
+    :parents [{:sha "fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+               :url "https://api.github.com/repos/fake-user/fake-repo/commits/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
+               :html_url "https://github.com/fake-user/fake-repo/commit/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688"}]
+    }
+  ]
+)
+
+(def expected-shas
+ '("87bbebf01a403a31408223d85dda6077a0492d8b"
+    "0d453af295fdf0769c11576a5545fe5f44ec8079"
+    "fee996e7a6ed6290b6b06eb2ac87a3f7998f2688"
+    "91fe7446aabeabc9c0baf96b4c7493f62147dae8"))
+
+(deftest test-pull-commits
+  (testing "given a seq of commits, get just the shas"
+    (is (= (pull-commits fake-commit-seq) expected-shas))))
