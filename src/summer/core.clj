@@ -2,7 +2,8 @@
   (:require [tentacles.core :as core]
             [tentacles.repos :as repos]
             [tentacles.pulls :as pulls]
-            [clj-time.format :as format])
+            [clj-time.format :as format]
+            [clj-time.core :as time-core])
    (:gen-class))
 
 (defn -main
@@ -43,3 +44,11 @@
 
 (defn parse-github-date [datestring]
   (format/parse github-formatter datestring))
+
+(defn to-month
+  "converts github datestring to first of the month"
+  [datestring]
+  (let [date-val (parse-github-date datestring)]
+    (time-core/date-time
+      (time-core/year date-val)
+      (time-core/month date-val))))

@@ -3,12 +3,12 @@
             [summer.core :refer [parse-github-date
                                  commit-changes
                                  pull-request-metadata
-                                 pull-commits]]
+                                 pull-commits
+                                 to-month]]
             [clj-time.core :as t]))
 
-(deftest test-formatter
-  (testing "when passed Github datestring, returns datetime"
-    (is (= (parse-github-date "2015-10-12T17:42:17Z") (t/date-time 2015 10 12 17 42 17)))))
+(def test-github-datestring
+  "2015-10-12T17:42:17Z")
 
 (def fake-commit
   {:html_url "https://github.com/fake-user/fake-repo/commit/1234567aab",
@@ -44,10 +44,6 @@
            :additions 12,
            :deletions 6},
    :sha "1234567aab"})
-
-(deftest test-commit-changes
-  (testing "when passed a commit, grabs the number of changes"
-    (is (= (commit-changes fake-commit) 18))))
 
 (def fake-prs
   [
@@ -110,11 +106,6 @@
     :created_at "2015-10-29T21:23:03Z"
     }])
 
-(deftest test-pr-metadata
-  (testing "given a seq of PRs, grab date and the number"
-    (is (= (pull-request-metadata fake-prs) '({:created_at "2015-11-02T15:11:32Z", :number 1020}
-                                              {:created_at "2015-10-29T21:23:03Z", :number 1018})))))
-
 
 (def fake-commit-seq
  [
@@ -126,7 +117,7 @@
              :committer {:name "Alice Smith and Bob Smith",
                          :email "fake-user@fake-user.com",
                          :date "2015-11-02T18:59:17Z"},
-             :message "added placement image model and table data",
+             :message "This message is a fake",
              :tree {:sha "d78154197703722550fa1c2e25f56c775adc4ea2",
                     :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/d78154197703722550fa1c2e25f56c775adc4ea2"},
              :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/87bbebf01a403a31408223d85dda6077a0492d8b",
@@ -148,7 +139,7 @@
              :committer {:name "Alice Smith and Bob Smith",
                          :email "fake-user@fake-user.com",
                          :date "2015-11-02T22:18:57Z"},
-             :message "add has one relationship to placement and placement_image",
+             :message "This message is not a real message",
              :tree {:sha "90a060a366edffe116488da3d121700dd6fe722f",
                     :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/90a060a366edffe116488da3d121700dd6fe722f"},
              :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/0d453af295fdf0769c11576a5545fe5f44ec8079",
@@ -170,7 +161,7 @@
              :committer {:name "Alice Smith and Bob Smith",
                          :email "fake-user@fake-user.com",
                          :date "2015-11-03T00:01:19Z"},
-             :message "added image uploading support for initial placement setup",
+             :message "Another fake message",
              :tree {:sha "e6df24477414404df90027e68790f339b700b9d2",
                     :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/e6df24477414404df90027e68790f339b700b9d2"},
              :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/fee996e7a6ed6290b6b06eb2ac87a3f7998f2688",
@@ -192,7 +183,7 @@
              :committer {:name "Alice Smith and Bob Smith",
                          :email "fake-user@fake-user.com",
                          :date "2015-11-03T00:01:58Z"},
-             :message "temp:commit for showing placement image on pplacement setup page",
+             :message "Fake commit message",
              :tree {:sha "c659536e37803a6c94f1ad79e03b0f8992f25be5",
                     :url "https://api.github.com/repos/fake-user/fake-repo/git/trees/c659536e37803a6c94f1ad79e03b0f8992f25be5"},
              :url "https://api.github.com/repos/fake-user/fake-repo/git/commits/91fe7446aabeabc9c0baf96b4c7493f62147dae8",
@@ -215,6 +206,22 @@
     "fee996e7a6ed6290b6b06eb2ac87a3f7998f2688"
     "91fe7446aabeabc9c0baf96b4c7493f62147dae8"))
 
+(deftest test-commit-changes
+  (testing "when passed a commit, grabs the number of changes"
+    (is (= (commit-changes fake-commit) 18))))
+
+(deftest test-pr-metadata
+  (testing "given a seq of PRs, grab date and the number"
+    (is (= (pull-request-metadata fake-prs) '({:created_at "2015-11-02T15:11:32Z", :number 1020}
+                                              {:created_at "2015-10-29T21:23:03Z", :number 1018})))))
 (deftest test-pull-commits
   (testing "given a seq of commits, get just the shas"
     (is (= (pull-commits fake-commit-seq) expected-shas))))
+
+(deftest test-formatter
+  (testing "when passed Github datestring, returns datetime"
+    (is (= (parse-github-date test-github-datestring) (t/date-time 2015 10 12 17 42 17)))))
+
+(deftest test-convert-to-mont
+  (testing "given a datestring, give the first day of that month"
+    (is (= (t/date-time 2015 10) (to-month test-github-datestring)))))
