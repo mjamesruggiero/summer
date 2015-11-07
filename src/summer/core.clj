@@ -13,16 +13,18 @@
 ;; data accessors; wrappers around tentacles
 
 (defn- commit
-  [user repo sha auth]
+  [{:keys [user repo sha auth]}]
   (repos/specific-commit user repo sha {:auth auth}))
 
 (defn- pull-requests
-  [user repo state auth]
+  [{:keys user repo state auth}]
   (pulls/pulls user repo {:auth auth :state state}))
 
 (defn- commits
-  [user repo number auth]
+  [{:keys user repo number auth}]
   (pulls/commits user repo number {:auth auth}))
+
+;; munging
 
 (defn pull-request-metadata
   "get pull request number and date"
